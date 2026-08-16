@@ -3,12 +3,24 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Archive, ChevronDown, LogOut, UserRound } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Archive, ChevronDown, LogIn, LogOut, UserRound } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import { LogoutButton } from '@/components/logout-button'
 
 export function ProfileMenu({ email }: { email: string }) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [pending, setPending] = useState(false)
   const initial = email.charAt(0).toUpperCase()
+
+  async function switchAccount() {
+    setPending(true)
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.replace('/auth/login')
+    router.refresh()
+  }
 
   return (
     <div className="relative">
@@ -32,15 +44,25 @@ export function ProfileMenu({ email }: { email: string }) {
             <p className="mt-1 truncate text-sm font-medium text-white">{email}</p>
           </div>
 
-          <Link href="/dashboard/archive" onClick={() => setOpen(false)} className="mt-2 flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+          <Link href="/dashboard" onClick={() => setOpen(false)} className="mt-2 flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+            <UserRound className="h-4 w-4 text-cyan-300" />
+            Dashboard
+          </Link>
+
+          <Link href="/dashboard/archive" onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
             <Archive className="h-4 w-4 text-amber-300" />
             Archive
           </Link>
 
-          <Link href="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
-            <UserRound className="h-4 w-4 text-cyan-300" />
-            Dashboard
-          </Link>
+          <button
+            type="button"
+            onClick={switchAccount}
+            disabled={pending}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-cyan-300 hover:bg-cyan-400/10 disabled:opacity-50"
+          >
+            <LogIn className="h-4 w-4" />
+            {pending ? 'Mengganti akun...' : 'Ganti Akun'}
+          </button>
 
           <div className="mt-2 flex items-center gap-3 border-t border-white/10 px-3 py-2 text-sm text-red-300">
             <LogOut className="h-4 w-4" />
