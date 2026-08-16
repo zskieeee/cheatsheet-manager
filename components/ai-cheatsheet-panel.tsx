@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Image as ImageIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 type Draft = {
   title: string
@@ -76,35 +75,30 @@ export function AiCheatsheetPanel() {
 
   async function saveDraft() {
     if (!draft) return
+
     setPending(true)
     setError('')
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    setStatus('')
 
-    if (!user) {
-      setError('Sesi login tidak ditemukan.')
-      setPending(false)
-      return
-    }
+    try {
+      const response = await fetch('/api/ai/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ draft }),
+      })
 
-    const { error: insertError } = await supabase.from('cheatsheets').insert({
-      user_id: user.id,
-      title: draft.title,
-      category: draft.category,
-      tags: draft.tags,
-      content: draft.content,
-      is_archived: false,
-      is_favorite: false,
-    })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error ?? 'Gagal menyimpan draft AI.')
 
-    if (insertError) setError(insertError.message)
-    else {
       setStatus('Draft berhasil disimpan ke vault.')
       setDraft(null)
       setPrompt('')
       router.refresh()
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Gagal menyimpan draft AI.')
+    } finally {
+      setPending(false)
     }
-    setPending(false)
   }
 
   return (

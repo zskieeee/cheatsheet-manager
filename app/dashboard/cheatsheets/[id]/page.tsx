@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { createClient } from '@/lib/supabase/server'
 import { MermaidBlock } from '@/components/mermaid-block'
+import { CodeBlock } from '@/components/code-block'
 
 export default async function CheatsheetDetailPage({
   params,
@@ -48,18 +49,20 @@ export default async function CheatsheetDetailPage({
             </div>
           </div>
 
-          <div className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-slate-300 prose-a:text-cyan-300 prose-strong:text-white prose-code:text-cyan-200 prose-pre:border prose-pre:border-white/10 prose-pre:bg-black/40">
+          <div className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-slate-300 prose-a:text-cyan-300 prose-strong:text-white prose-code:text-cyan-200">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
                 code({ className, children, ...props }) {
                   const language = /language-(\w+)/.exec(className ?? '')?.[1]
                   const code = String(children).replace(/\n$/, '')
+
                   if (language === 'mermaid') return <MermaidBlock chart={code} />
-                  return <code className={className} {...props}>{children}</code>
+                  if (!className) return <code className="rounded bg-white/10 px-1.5 py-0.5 text-cyan-200" {...props}>{children}</code>
+                  return <CodeBlock code={code} language={language} />
                 },
                 pre({ children }) {
-                  return <div className="my-4 overflow-x-auto">{children}</div>
+                  return <>{children}</>
                 },
               }}
             >
