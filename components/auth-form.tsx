@@ -4,6 +4,7 @@
 import Link from 'next/link'
 import { FormEvent, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { GoogleSignInButton } from '@/components/google-sign-in-button'
 
 type Props = { mode: 'login' | 'register' }
 
@@ -87,10 +88,18 @@ export function AuthForm({ mode }: Props) {
         <span className="h-px flex-1 bg-white/10" />
       </div>
 
+      <GoogleSignInButton />
+
+      <div className="flex items-center gap-3 text-xs text-slate-500"><span className="h-px flex-1 bg-white/10" />atau gunakan email<span className="h-px flex-1 bg-white/10" /></div>
+
       <label className="block space-y-2 text-sm text-slate-200">
         <span>Email</span>
         <input value={email} onChange={(event) => setEmail(event.target.value)} name="email" type="email" required className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-cyan-400" />
       </label>
+
+      <GoogleSignInButton />
+
+      <div className="flex items-center gap-3 text-xs text-slate-500"><span className="h-px flex-1 bg-white/10" />atau gunakan email<span className="h-px flex-1 bg-white/10" /></div>
 
       <label className="block space-y-2 text-sm text-slate-200">
         <span>Password</span>
