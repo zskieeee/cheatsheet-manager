@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ProfileMenu } from '@/components/profile-menu'
 import { AiCheatsheetPanel } from '@/components/ai-cheatsheet-panel'
 import { CheatsheetSearch } from '@/components/cheatsheet-search'
+import { BackupTools } from '@/components/backup-tools'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -59,6 +60,7 @@ export default async function DashboardPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-6 py-10">
+        <BackupTools cards={cards} />
         <AiCheatsheetPanel />
 
         <div className="mb-6 flex items-end justify-between">
