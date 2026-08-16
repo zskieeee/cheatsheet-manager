@@ -14,7 +14,6 @@ export function AuthForm({ mode }: Props) {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [pending, setPending] = useState(false)
-  const [googlePending, setGooglePending] = useState(false)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -42,28 +41,6 @@ export function AuthForm({ mode }: Props) {
     window.location.href = '/dashboard'
   }
 
-  async function handleGoogleLogin() {
-    setError('')
-    setSuccess('')
-    setGooglePending(true)
-
-    const supabase = createClient()
-    const { error: googleError } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: {
-          prompt: 'select_account',
-        },
-      },
-    })
-
-    if (googleError) {
-      setError(googleError.message)
-      setGooglePending(false)
-    }
-  }
-
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5 rounded-2xl border border-white/10 bg-white/[.04] p-8 shadow-2xl">
       <div>
@@ -72,15 +49,7 @@ export function AuthForm({ mode }: Props) {
         <p className="mt-2 text-sm text-slate-400">Simpan catatan teknis pribadi secara terstruktur.</p>
       </div>
 
-      <button
-        type="button"
-        onClick={handleGoogleLogin}
-        disabled={pending || googlePending}
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-white/15 bg-white px-4 py-2 font-semibold text-slate-900 transition hover:bg-slate-100 disabled:opacity-50"
-      >
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-sm font-bold">G</span>
-        {googlePending ? 'Menghubungkan...' : 'Lanjutkan dengan Google'}
-      </button>
+      <GoogleSignInButton />
 
       <div className="flex items-center gap-3 text-xs text-slate-500">
         <span className="h-px flex-1 bg-white/10" />
@@ -88,18 +57,10 @@ export function AuthForm({ mode }: Props) {
         <span className="h-px flex-1 bg-white/10" />
       </div>
 
-      <GoogleSignInButton />
-
-      <div className="flex items-center gap-3 text-xs text-slate-500"><span className="h-px flex-1 bg-white/10" />atau gunakan email<span className="h-px flex-1 bg-white/10" /></div>
-
       <label className="block space-y-2 text-sm text-slate-200">
         <span>Email</span>
         <input value={email} onChange={(event) => setEmail(event.target.value)} name="email" type="email" required className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-cyan-400" />
       </label>
-
-      <GoogleSignInButton />
-
-      <div className="flex items-center gap-3 text-xs text-slate-500"><span className="h-px flex-1 bg-white/10" />atau gunakan email<span className="h-px flex-1 bg-white/10" /></div>
 
       <label className="block space-y-2 text-sm text-slate-200">
         <span>Password</span>
@@ -109,7 +70,7 @@ export function AuthForm({ mode }: Props) {
       {error && <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">{error}</p>}
       {success && <p className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-300">{success}</p>}
 
-      <button disabled={pending || googlePending} className="w-full rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-950 disabled:opacity-50">
+      <button type="submit" disabled={pending} className="w-full rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-950 disabled:opacity-50">
         {pending ? 'Memproses...' : mode === 'login' ? 'Masuk' : 'Daftar'}
       </button>
 
