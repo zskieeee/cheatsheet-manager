@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { LogoutButton } from '@/components/logout-button'
+import { ProfileMenu } from '@/components/profile-menu'
 import { AiCheatsheetPanel } from '@/components/ai-cheatsheet-panel'
 import { CheatsheetSearch } from '@/components/cheatsheet-search'
 
@@ -53,18 +53,13 @@ export default async function DashboardPage() {
             <Link href="/dashboard/new" className="rounded-lg bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300">
               + Tambah Cheatsheet
             </Link>
-            <LogoutButton />
+            <ProfileMenu email={user.email ?? 'User'} />
           </div>
         </div>
       </header>
 
       <section className="mx-auto max-w-7xl px-6 py-10">
         <AiCheatsheetPanel />
-
-        <div className="mb-8 rounded-2xl border border-cyan-400/20 bg-cyan-400/[.05] p-6">
-          <p className="text-sm text-slate-400">Login sebagai</p>
-          <p className="mt-1 text-lg font-semibold text-cyan-300">{user.email}</p>
-        </div>
 
         <div className="mb-6 flex items-end justify-between">
           <div>
